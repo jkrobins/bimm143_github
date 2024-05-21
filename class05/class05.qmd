@@ -1,0 +1,178 @@
+---
+title: "Class 5: Data Visualization with ggplot"
+author: "Justin R (PID: A16307501)"
+format: html
+toc: true
+---
+
+Today we will have our first play play with the **ggplot** package - one of the most popular graphics packages on the plante
+
+There are many plotting systems in R. These include so-called *"base"* plotting/graphics
+
+```{r}
+plot(cars)
+```
+
+Base plot is gerenally rather short code and somewhat dull plots - but it is always there for you and is fast for big datasets
+
+
+If I want to use **ggplot2** it takes some work
+
+```{r}
+#ggplot(cars)
+```
+
+I need to install the package first to my computer. To do this I can use the function `install.packages("ggplot2")`
+
+Every time I want to use a package I need to load it up with a `library()` call.
+
+```{r}
+library(ggplot2)
+```
+
+Now finally use ggplot
+
+```{r}
+ggplot(cars)
+```
+Every ggplot has at least 3 things:
+
+**data** the data frame withe the data you want to plot,
+**aes** the aesthetic mapping,
+**geom** the way we visualize the dataset
+
+```{r}
+head(cars)
+```
+
+
+
+```{r}
+bp <- ggplot(cars)+
+  aes(x=speed, y=dist)+
+  geom_point()+
+  geom_smooth()
+```
+
+```{r}
+bp + geom_smooth(se=FALSE, method="lm")+
+  labs(title="Stopping Distance of Old Cars",
+       x="Speed (MPH)",
+       y="Distance (ft)",
+       caption="From the cars dataset") +
+  theme_bw()
+```
+
+## A more complicated scatterplot
+
+```{r}
+url <- "https://bioboot.github.io/bimm143_S20/class-material/up_down_expression.txt"
+genes <- read.delim(url)
+```
+
+```{r}
+head(genes)
+```
+
+
+```{r}
+nrow(genes)
+```
+
+```{r}
+table(genes$State)
+```
+
+```{r}
+round(sum(genes$State == "up") / nrow(genes) * 100 , 2)
+```
+
+```{r}
+n.gene <- nrow(genes)
+n.up <- sum(genes$State == "up")
+
+up.precent <- n.up/n.gene * 100
+round(up.precent, 2)
+```
+
+```{r}
+head(genes, 2)
+```
+
+```{r}
+p <- ggplot(genes) +
+  aes(x=Condition1, y=Condition2, col=State) +
+  geom_point()
+```
+
+```{r}
+p + labs(title="some nice title",
+         x = "Control (no drug)",
+         y = "treated (drug)") +
+  scale_colour_manual(values=c("blue", "gray", "red"))
+```
+
+## exploring the gapminder dataset
+
+Here we will load up the gapminder dataset to get practice with different aes mappings
+
+```{r}
+# File location online
+url <- "https://raw.githubusercontent.com/jennybc/gapminder/master/inst/extdata/gapminder.tsv"
+
+gapminder <- read.delim(url)
+```
+
+How amny entries rows are in this dataset?
+
+```{r}
+nrow(gapminder)
+```
+
+How many columns?
+
+```{r}
+ncol(gapminder)
+```
+
+```{r}
+head(gapminder)
+```
+```{r}
+table(gapminder$year)
+```
+
+how many continents?
+
+```{r}
+table(gapminder$continent)
+```
+```{r}
+length(unique(gapminder$continent))
+```
+how many countries in this dataset?
+
+```{r}
+length(unique(gapminder$country))
+```
+
+```{r}
+ggplot(gapminder)+
+  aes(x=gdpPercap, y=lifeExp)+
+  geom_point()+
+  facet_wrap(~continent)
+
+```
+```{r}
+library(dplyr)
+
+gapminder_2007 <- gapminder %>% filter(year==2007)
+```
+
+```{r}
+ggplot(gapminder_2007)+
+  aes(x=gdpPercap, y=lifeExp, col=continent, size=pop)+
+  geom_point(alpha=0.5)
+```
+
+
