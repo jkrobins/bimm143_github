@@ -1,0 +1,199 @@
+---
+title: "Class 7"
+format: html
+---
+We will import the `UK_foods.csv` dataset
+
+```{r}
+url <- "https://tinyurl.com/UK-foods"
+x <- read.csv(url)
+```
+
+> Q1. How many rows and columns are in your new data frame named x? What R functions could you use to answer this questions?
+
+```{r}
+dim(x)
+```
+
+We will want to check that the data has imported correctly
+
+```{r}
+head(x)
+```
+
+It seems that the names for the rows was incorrectly counted as a column, let's fix that
+
+```{r}
+rownames(x) <- x[,1]
+x <- x[,-1]
+head(x)
+```
+Or alternatively:
+```{r}
+x <- read.csv(url, row.names=1)
+head(x)
+```
+
+We see that the problem seems to have been resolved, let's check with `dim()`
+
+```{r}
+dim(x)
+```
+
+> Q2. Which approach to solving the ‘row-names problem’ mentioned above do you prefer and why? Is one approach more robust than another under certain circumstances?
+
+The second approach is better because it applies the change to the entire dataset without having to redefine x, which may become a problem if there are other aspects of the imported dataset that you would like to change
+
+As a table this data does not show us much. Let's graph it:
+
+```{r}
+barplot(as.matrix(x), beside=T, col=rainbow(nrow(x)))
+```
+
+> Q3: Changing what optional argument in the above barplot() function results in a stacked barplot?
+
+```{r}
+#the beside portion is shown as true, needs to be false to stack the bars 
+barplot(as.matrix(x), beside=F, col=rainbow(nrow(x)))
+```
+
+> Q5: Generating all pairwise plots may help somewhat. Can you make sense of the following code and resulting figure? What does it mean if a given point lies on the diagonal for a given plot?
+
+```{r}
+pairs(x, col=rainbow(10), pch=16)
+```
+
+The pairs shows graphs of each combination of observations plotted against each other: i.e England against itself, England vs Wales, etc. The closer the dots to the diagonal line the more similarities there are, the further the more differences
+
+> Q6. What is the main differences between N. Ireland and the other countries of the UK in terms of this data-set?
+
+The first cluster of dots deviate from the diagonal line slightly more than the other plots, it is hard to really say what this means, or even see the differences clearly in the first place b/c we are forced to visually compare with 9 other graphs
+
+First, the data needs to be transposed to work with PCA
+
+```{r}
+pca <- prcomp( t(x) )
+summary(pca)
+```
+
+> Q7. Complete the code below to generate a plot of PC1 vs PC2. The second line adds text labels over the data points.
+
+```{r}
+plot(pca$x[,1], pca$x[,2], xlab="PC1", ylab="PC2", xlim=c(-270,500))
+text(pca$x[,1], pca$x[,2], colnames(x))
+```
+
+> Q8. Customize your plot so that the colors of the country names match the colors in our UK and Ireland map and table at start of this document.
+
+```{r}
+my_colors <- c("orange", "purple", "blue", "green")
+
+plot(pca$x[,1], pca$x[,2], xlab="PC1", ylab="PC2", xlim=c(-270,500))
+text(pca$x[,1], pca$x[,2], colnames(x), col = my_colors)
+```
+
+To figure out the variance in the data for each PC we need the standard deviation:
+
+```{r}
+v <- round( pca$sdev^2/sum(pca$sdev^2) * 100 )
+v
+```
+
+Now to plot the variances
+
+```{r}
+barplot(v, xlab="Principal Component", ylab="Percent Variation")
+```
+
+To see the influence of each variable on the PCs, aka the loading scores, we use the `$rotation` component:
+
+```{r}
+par(mar=c(10, 3, 0.35, 0))
+barplot( pca$rotation[,1], las=2 )
+```
+
+The highest positive values are what cause skewing to the right in the PC1 vs PC2 plot, which is potatoes and soft drinks here. The lowest negativee values are what cause skewing to the right in the PC1 vs PC2 plot, which is fresh fruit and alcoholic drinks
+
+> Q9: Generate a similar ‘loadings plot’ for PC2. What two food groups feature prominantly and what does PC2 maninly tell us about?
+
+```{r}
+par(mar=c(10, 3, 0.35, 0))
+barplot( pca$rotation[,2], las=2 )
+```
+
+Now we will try to plot the same thing on ggplot2
+
+```{r}
+library(ggplot2)
+
+df <- as.data.frame(pca$x)
+df_lab <- tibble::rownames_to_column(df, "Country")
+
+ggplot(df_lab) + 
+  aes(PC1, PC2, col=Country) + 
+  geom_point()
+```
+
+Now to plot the loading plot:
+
+```{r}
+ld <- as.data.frame(pca$rotation)
+ld_lab <- tibble::rownames_to_column(ld, "Food")
+
+ggplot(ld_lab) +
+  aes(PC1, Food) +
+  geom_col() 
+```
+
+Another way to see this information together with the main PCA plot is in a so-called biplot:
+
+```{r}
+biplot(pca)
+```
+
+## PCA of RNA seq data
+
+```{r}
+url2 <- "https://tinyurl.com/expression-CSV"
+rna.data <- read.csv(url2, row.names=1)
+head(rna.data)
+```
+
+```{r}
+#Again we have to take the transpose of our data
+pca <- prcomp(t(rna.data), scale=TRUE)
+```
+
+```{r}
+summary(pca)
+```
+>Q How many genes in this dataset?
+
+```{r}
+nrow(rna.data)
+```
+```{r}
+head(pca$x)
+```
+
+i will make a main result figure use ggplot:
+
+```{r}
+library(ggplot2)
+```
+
+
+```{r}
+res <- as.data.frame(pca$x)
+```
+
+```{r}
+ggplot(res) + 
+  aes(x=PC1, y=PC2, col=rownames(res))+
+  geom_point()
+```
+
+```{r}
+colnames(rna.data)
+```
+
