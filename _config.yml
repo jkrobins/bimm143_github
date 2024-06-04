@@ -1,3 +1,5 @@
 remote_theme: "jeffreytse/jekyll-theme-yat"
-logo: https://www.icgeb.org/wp-content/uploads/2023/01/Genomic-analysis-488977381.png
+banner: "https://www.icgeb.org/wp-content/uploads/2023/01/Genomic-analysis-488977381.png"
 title: Bioinformatics
+heading: "Bioinformatics"
+subheading: "Justin Robinson"
