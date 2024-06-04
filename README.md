@@ -2,7 +2,15 @@
 
 My classwork for BIMM143 S24 at UC San Diego.
 
-- **Class 5** [Data visualization with ggplot](class05.md)
+- **Class 1** 
+
+- **Class 2** 
+
+- **Class 3** 
+
+- **Class 4** 
+
+- **Class 5** [Data visualization with ggplot](class05/class05.md)
 
 - **Class 6** [R  functions](https://github.com/jkrobins/bimm143_github/blob/main/class06/Class%206%20HW.pdf)
   
@@ -17,3 +25,15 @@ My classwork for BIMM143 S24 at UC San Diego.
 - **Class 11**
 
 - **Class 12**
+
+- **Class 13**
+
+- **Class 14**
+
+- **Class 15**
+
+- **Class 16**
+
+- **Class 17**
+
+- **Class 18**
