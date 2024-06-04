@@ -1,0 +1,179 @@
+---
+title: "Class 13: RNASeq Analysis"
+format: html
+---
+
+The data for today's lab comes from a publsihed RNA-seq experiment where airway smooth muscle cells were treated with dexamethasone
+
+## IMport data
+
+We need two things for this analysis: counts and meta data these are called "countData" and "colData" in the DESeq2 world.
+
+```{r}
+counts <- read.csv("airway_scaledcounts.csv", row.names = 1)
+metadata <- read.csv("airway_metadata.csv")
+```
+
+
+```{r}
+head(counts)
+```
+
+The counts are organized with a gene per row and experiment per column
+
+```{r}
+head(metadata)
+```
+
+> Q1. How many genes are in this dataset?
+
+```{r}
+nrow(counts)
+```
+
+> Q2. How many 'control' cell lines do we have?
+
+```{r}
+sum(metadata$dex == "control")
+```
+
+##Examine DAta
+
+```{r}
+colnames(counts) == metadata$id
+```
+
+If youw want to know that all the elements of a vector are TRUE we can use the `all()` function
+
+```{r}
+all( c())
+```
+
+
+```{r}
+all( colnames(counts) == metadata$id )
+```
+
+## Analysis
+
+I want to start by comparing "control" and "treated" columns. I will first find the average for each gene (row) in all "control" columns and then do the same for all "treated" columns. I will compare the two after.
+
+Let's extract all "control" columns first.
+
+```{r}
+control.inds <- metadata$dex == "control"
+```
+
+```{r}
+control.counts <- counts[,control.inds]
+```
+
+Now find the mean value per gene using the `apply()` function.
+
+```{r}
+control.mean <- apply(control.counts, 1, mean)
+```
+
+Now doing the same for all "treated" columns:
+
+```{r}
+treated.inds <- metadata$dex == "treated"
+treated.counts <- counts[,treated.inds]
+treated.mean <- apply(treated.counts, 1, mean)
+```
+
+Put these two mean vectors together for easy access
+
+```{r}
+mean.counts <- data.frame(control.mean, treated.mean)
+head(mean.counts)
+```
+
+Let's plot these means against each other to see.
+
+```{r}
+plot(mean.counts)
+```
+
+```{r}
+plot(mean.counts, log = "xy")
+```
+
+We most often work in log2 units because they have a more simple interpretation
+
+Here we calculate the log2 Fold-change of treated/control values and add it to our data.frame results
+
+```{r}
+mean.counts$log2fc <- log2(mean.counts$treated.mean / mean.counts$control.mean)
+
+head(mean.counts)
+```
+
+There are some weird answers in her like NaN (Not a Number) and -Inf (-Infinity) that all come because I have zero count genes in my dataset
+
+It is common practice to filter these zero count genes out before we go any further.
+
+```{r}
+to.keep.inds <- (rowSums(mean.counts[,1:2] == 0) == 0)
+
+mycounts <- mean.counts[to.keep.inds,]
+head(mycounts)
+```
+
+> Q. How many genes do we have left after zero count filtering?
+
+```{r}
+nrow(mycounts)
+```
+
+A common threshold for calling a gene "up" or "down" is a log2 fold change of +2 or -2
+
+>Q. How many "up" regulated genes do we have?
+
+```{r}
+sum(mycounts$log2fc >= +2)
+```
+
+```{r}
+#/ message: false
+library(DESeq2)
+```
+
+To use DESeq we need to get otr input data in very particular format.
+
+```{r}
+dds <- DESeqDataSetFromMatrix(countData = counts,
+                       colData = metadata,
+                       design = ~dex)
+```
+
+Run DESeq analysis
+```{r}
+dds <- DESeq(dds)
+```
+
+Get the results
+```{r}
+res <- results(dds)
+head(res)
+```
+
+I want to make a figure showing an overview of all my results to date. A plot of **log2 fold change** vs the **p-value** (adjusted p-value)
+
+```{r}
+#taking -log flips the plot upside down, which in this case looks more pleasing to the eye
+plot(res$log2FoldChange, -log(res$padj))
+
+abline(v=-2, col="gray")
+abline(v=2, col ="gray")
+abline(h=-log(0.05), col="gray")
+
+mycols <- rep("gray", nrow(res))
+mycols[ abs(res$log2FoldChange) > 2 ]  <- "red" 
+
+inds <- (res$padj < 0.01) & (abs(res$log2FoldChange) > 2 )
+mycols[ inds ] <- "blue"
+
+plot(res$log2FoldChange, -log(res$padj), col=mycols)
+```
+The values that are higher on the plot have a lower p-value, so should be focused on for investigation. Top right is up-regulated and significant, top left box is down-regulated and significant

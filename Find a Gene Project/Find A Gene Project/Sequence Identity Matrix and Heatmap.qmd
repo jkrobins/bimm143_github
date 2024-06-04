@@ -1,0 +1,57 @@
+---
+title: "Seq Identity Matrix and Heatmap"
+format: html
+---
+> Q7: Heatmap
+
+Load in Bio3D package
+```{r}
+library(bio3d)
+```
+
+Read the FASTA alignment file
+```{r}
+# Read the FASTA alignment file
+aln <- read.fasta("Q5_MSA_fastafied")
+
+print(aln)
+```
+
+Now calculate the sequence identity matrix
+```{r}
+# Calculate the sequence identity matrix
+identity_matrix <- seqidentity(aln)
+
+# Print the sequence identity matrix
+print(identity_matrix)
+```
+
+and generate heatmap
+```{r}
+library(pheatmap)
+pheatmap(identity_matrix, 
+         cluster_rows = TRUE, 
+         cluster_cols = TRUE, 
+         display_numbers = TRUE, 
+         number_format = "%.2f", 
+         main = "Sequence Identity Heatmap", 
+         color = colorRampPalette(c("white", "blue"))(100))
+```
+
+
+> Q8.
+
+```{r}
+library(bio3d)
+
+#protein sequence
+EasternCoralSnake_Sequence <- read.fasta("EasternCoralSnake Sequence.txt")
+
+# Run BLAST search against the PDB
+blast_results <- blast.pdb(EasternCoralSnake_Sequence)
+
+top_hits <- blast_results$hits[3, ]
+print(top_hits)
+
+```
+
