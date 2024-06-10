@@ -14,7 +14,7 @@ My classwork for BIMM143 S24 at UC San Diego.
 
 - **Class 6** [R  functions](class06/class06.md)
   
-- **Class 7** [I can't remember](class07/class07.md)
+- **Class 7** [UK Foods](class07/class07.md)
 
 - **Class 8**
 
