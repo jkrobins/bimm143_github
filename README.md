@@ -1,6 +1,6 @@
 # Intro to Bioinformatics
 
-Some of my classwork for BIMM143 S24 at UC San Diego. (excuse any typos, the professor was going fast sometimes haha)
+Some of my classwork for BIMM143 S24 at UC San Diego.
 
 - **Class 5** [Data visualization with ggplot](class05/class05.md)
 
