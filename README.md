@@ -1,14 +1,6 @@
 # Intro to Bioinformatics
 
-My classwork for BIMM143 S24 at UC San Diego.
-
-- **Class 1** 
-
-- **Class 2** 
-
-- **Class 3** 
-
-- **Class 4** 
+Some of my classwork for BIMM143 S24 at UC San Diego. (excuse any typos, the professor was going fast sometimes haha)
 
 - **Class 5** [Data visualization with ggplot](class05/class05.md)
 
@@ -16,26 +8,12 @@ My classwork for BIMM143 S24 at UC San Diego.
   
 - **Class 7** [UK Foods](class07/class07.md)
 
-- **Class 8**
+- **Class 8** [Breast Cancer Mini Project](class08/class08.md)
 
-- **Class 9**
+- **Class 9** [Halloween Candy](class09/class09.md)
 
-- **Class 10**
+- **Class 10** [Structural Bioinformatics](class10/class10.qmd)
 
-- **Class 11**
+- **Class 13** [RNA Seq Analysis](class13/class13.qmd)
 
-- **Class 12**
-
-- **Class 13**
-
-- **Class 14**
-
-- **Class 15**
-
-- **Class 16**
-
-- **Class 17**
-
-- **Class 18**
-
-- **Project** [Novel Gene Analysis]() 
+- **Class 14** [Differential Expression Analysis](class14/class14.qmd)
